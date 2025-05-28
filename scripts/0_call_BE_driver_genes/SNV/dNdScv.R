@@ -3,9 +3,11 @@ library(tidyr)
 library(stringr)
 library(dndscv)
 
-data_path <- "C:/Users/lw748/OneDrive - University of Cambridge/projects/BO_gene_list/data/290_samples_combined_for_dNdS.csv"
-output_dir <- "C:/Users/lw748/OneDrive - University of Cambridge/projects/BO_gene_list/results/"
+data_path <- "/mnt/scratchc/stlab-icgc/users/wu04/project/bo_gene_list/results/290_samples_combined_for_dNdS.csv"
+output_dir <- "/mnt/scratchc/stlab-icgc/users/wu04/project/bo_gene_list/results/results/"
 dNdS_data <- read.csv(data_path)
+options(width = 200)
+head(dNdS_data, n=200)
 #sample_id <- unique(dNdS_data$sampleID)
 #write.csv(sample_id, paste0(output_dir, 'samples_with_snv_indel.csv'))
 
