@@ -1,0 +1,12 @@
+missense
+nonsense
+stop_gained
+stop_lost
+splice_donor
+splice_acceptor
+splice_region
+start_lost
+initiator_codon
+inframe_insertion
+inframe_deletion
+frameshift
