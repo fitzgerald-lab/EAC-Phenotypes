@@ -1,0 +1,15 @@
+---
+title: "00_gel_mutsigs"
+author: "Shawn Zamani"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+# load('data/original/wgs/gel_signatures_alvin/GEL-mut-mat.RData')
+# load('data/original/wgs/gel_signatures_alvin/GEL-fits-maria-sigs.RData')
+# load('data/original/wgs/gel_signatures_alvin/GEL-granges.RData')
+```
+

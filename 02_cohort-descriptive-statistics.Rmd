@@ -1,0 +1,243 @@
+---
+title: "cohort-descriptive-statistics"
+author: "Shawn Zamani"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+```
+
+# Read data 
+
+```{r}
+occams_best2_all_cohort <- read_csv('data/processed/chapter.2_occams_best2_all_cohort_20230119.csv')
+```
+
+# Table 1
+
+```{r}
+cohort_table_1 <- occams_best2_all_cohort %>% 
+  select(
+      c(
+    'Phenotype',
+    'age',
+    'age_group',
+    'gender',
+    'bmi',
+    'ethnicity',
+    'bmi_group',
+    'smk_ever_smoked',
+    'taken_nsaids',
+    'acid_suppressant',
+    'duration_since_heartburn_start',
+    'heartburn_inferred_bin',
+    'pTStage_four_f',
+    'RP.SiewertClassification'
+  ) ) %>% 
+    mutate(
+    Phenotype = case_when(
+      Phenotype == "Control" ~ "0_Controls",
+      Phenotype == "Barretts" ~ "1_BE/IM",
+      Phenotype == "BE/IM EAC" ~ "2_BE/IM EAC",
+      Phenotype == "Non-BE/IM EAC" ~ "3_non-BE/IM EAC",
+      Phenotype == "Unknown BE/IM EAC" ~ "4_BE/IM unknown EAC"))
+
+
+table1::table1( ~ . | Phenotype, cohort_table_1, render.continuous = c(. = "Mean [SD]", . = "Median [Q1, Q3]"))
+```
+
+# P vals
+
+```{r}
+independent <-
+  c(
+    'age',
+    'age_group',
+    'gender',
+    'bmi',
+    'ethnicity',
+    'bmi_group',
+    'smk_ever_smoked',
+    'taken_nsaids',
+    'acid_suppressant',
+    'duration_since_heartburn_start',
+    'pTStage_four_f',
+    'RP.SiewertClassification'
+  )
+dependent <- "Phenotype"
+# independent_base = c("age_group", "Gender")
+# independent_permute = c("bmi_group", "Smoking", "NSAID", "ACID_SUPPRESSANT", "Duration_Reflux_Symptoms")
+
+```
+
+
+```{r}
+cohort_table_1 %>% 
+  finalfit::summary_factorlist(
+    dependent,
+    independent,
+    p = TRUE,
+    # add_dependent_label = TRUE,
+    # total_col = T,
+    # add_row_totals = T,
+    # include_row_missing_col = T,
+    na_include = T, 
+    column = F
+    # na_to_prop = T
+  ) %>%
+  kableExtra::kable(row.names = F) %>%
+  kableExtra::kable_styling(full_width = F,html_font = 'arial')
+
+```
+
+# visual figure instead of Table 1
+```{r}
+cohort_visual_table_1 <- occams_best2_all_cohort %>% 
+  select(
+    ID,
+    Phenotype,
+    # Age,
+    age_group,
+    gender,
+    # BMI,
+    ethnicity,
+    bmi_group,
+    smk_ever_smoked,
+    taken_nsaids,
+    acid_suppressant,
+    duration_since_heartburn_start,
+    pTStage_four_f,
+    RP.SiewertClassification
+  ) %>% 
+  dplyr::mutate(
+    age_group = factor(
+      age_group,
+      levels = c(
+        "< 50 years old",
+        "50 - 59 years old",
+        "60 - 69 years old",
+        "70+ years old"
+      ),
+    ordered = TRUE)) %>% 
+  dplyr::mutate(bmi_group = case_when(
+    bmi_group == "underweight" ~ "3_underweight",
+    bmi_group == "normal" ~ "2_normal",
+    bmi_group == "overweight" ~ "1_overweight",
+    bmi_group == "obese" ~ "0_obese"
+  )) %>%
+  dplyr::mutate(
+    Phenotype = case_when(
+      Phenotype == "Control" ~ "0_Controls",
+      Phenotype == "Barretts" ~ "1_BE/IM",
+      Phenotype == "BE/IM EAC" ~ "2_BE/IM EAC",
+      Phenotype == "Non-BE/IM EAC" ~ "3_non-BE/IM EAC",
+      Phenotype == "Unknown BE/IM EAC" ~ "4_BE/IM unknown EAC")) %>% 
+  dplyr::mutate(duration_since_heartburn_start = case_when(
+      duration_since_heartburn_start == "Never" ~ "3_Never",
+      duration_since_heartburn_start == "< 5 years" ~ "2_< 5 years",
+      duration_since_heartburn_start == "5-10 years" ~ "1_5-10 years",
+      duration_since_heartburn_start == "> 10 years" ~ "0_> 10 years"
+      
+    )) %>% 
+  dplyr::mutate(
+    pTStage_four_f = case_when(
+      pTStage_four_f == "T1" ~ "3_T1",
+      pTStage_four_f == "T2" ~ "2_T2",
+      pTStage_four_f == "T3" ~ "1_T3",
+      pTStage_four_f == "T4" ~ "0_T4")) %>% 
+    dplyr::mutate(
+    RP.SiewertClassification = case_when(
+      RP.SiewertClassification == "Type I" ~ "2_Type I",
+      RP.SiewertClassification == "Type II" ~ "1_Type II",
+      RP.SiewertClassification == "Type III" ~ "0_Type III"))
+
+visdat::vis_miss(cohort_visual_table_1)
+```
+
+
+melt data
+```{r}
+cohort_visual_table_1_melt <- reshape2::melt(cohort_visual_table_1, id.vars = c('ID',"Phenotype") , measure.vars = c("age_group", "gender", 'ethnicity', 'bmi_group', 'smk_ever_smoked', 'taken_nsaids', 'acid_suppressant', 'duration_since_heartburn_start', 'pTStage_four_f', 'RP.SiewertClassification'))  %>%
+  dplyr::mutate(variable = factor(variable, levels =  rev(c(
+    "Phenotype",
+    "age_group",
+    "gender",
+    'ethnicity',
+    'bmi_group',
+    'smk_ever_smoked',
+    'taken_nsaids',
+    'acid_suppressant',
+    'duration_since_heartburn_start',
+    'pTStage_four_f',
+    'RP.SiewertClassification'
+  )), ordered = T
+  )) %>% 
+  mutate(value = case_when(is.na(value) ~ "!Not Recorded", TRUE ~ value)) 
+
+```
+
+
+```{r}
+
+colours <- c('3_BE/IM unknown EAC' = "#6f5006", 
+             '2_BE/IM EAC' = "goldenrod1",
+             '1_non-BE/IM EAC'= "darkgoldenrod", 
+             '0_BE/IM' = "darkcyan",
+  
+             '< 50 years old"' = "#B2DF8A", 
+             '50 - 59 years old' = "#679440", 
+             '60 - 69 years old' = "#397835", 
+             '70+ years old' = "#397835", 
+
+
+             
+             "M" = "#43a382", #66CDAA
+             "F" = "#95dbc3", 
+             
+             "Y" = "#99dfff", 
+             "N" = "#db7676", 
+             
+             "2_Type I" = "#A3A3FF",
+             "1_Type II" = "#4949FF",
+             "0_Type III" = "#0000FF",
+             
+             "Other" = "#0058B3", 
+             "White" = "#001b87", 
+             # bmi
+             # "underweight" = "#F6BDC0",
+             # "normal" = "#F1959B", 
+             "3_underweight" = "#F07470", 
+             "2_normal" = "#EA4C46", 
+             "1_overweight" = "#DC1C13", 
+             "0_obese" = "#750b0b", 
+             #"Moderate" = "#FF872C", 
+             "3_T1" = "#FFA12C",
+             "2_T2" = "#ff8945",
+             "1_T3" = "#ff4d00",
+             "0_T4" = "#b80404",
+             # "Type III" = "#ff4d00",
+             # reflux
+             "3_Never" = "#bca0dc", 
+             "2_< 5 years" = "#b491c8", 
+             "1_5-10 years" = "#7c5295", 
+             "0_> 10 years" = "#663a82", 
+             # "TRG5" = "#52307c",
+             '!Not Recorded' = "#b5b5b5")
+
+ggplot(cohort_visual_table_1_melt , aes(x = variable) ) + 
+  geom_bar(position = "fill", aes(fill = value)) + 
+  scale_y_continuous(labels = scales::percent) +
+  facet_grid(cols = vars(Phenotype))+
+  coord_flip() + 
+  scale_fill_manual(values = colours) +
+  theme(legend.position = "none") +
+  labs(y= "Percent", x = "") +
+  theme_classic(base_size = 18) +
+  theme(legend.position="none") +
+  scale_x_discrete(labels = rev(c("Phenotype", "Age Group", "Gender", 'Ethnicity',
+                              'BMI Category', 'Smoking', 'NSAID Use', 'PPI Use', 'Duration of \n Reflux Symptoms', "T stage (OAC)", "Siewert type (OAC)")))
+```

@@ -1,0 +1,133 @@
+---
+title: "04_OAC-wgd-aneuploidy"
+author: "Shawn Zamani"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+# packages ----------------------------------------------------------------
+library(tidyverse)
+library(ggplot2)
+```
+
+# read and prepare data
+
+## cohort
+
+```{r}
+OAC_per_sample_ploidy <- read_tsv('data/original/wgs/710_oac_gistic/per_sample_ploidy.txt') %>% 
+  rename(DNA_ID = Sample)
+
+occams_wgs_thesis_cohort <- read_csv('data/processed/wgs_processed/occams_thesis_wgs_cohort_20230402.csv')
+
+occams_710_wgs_thesis_cohort <-
+  vroom::vroom('data/original/wgs/case_spec_dna_occams_oac_normal.710.csv',
+               col_names = FALSE) %>%
+  transmute(
+    ID = str_replace(X1, 'OC/', 'OCCAMS/'),
+    spec_oac = X2,
+    dna_oac = X3,
+    dna_normal = X4
+  ) %>%
+  select(-spec_oac) %>%
+  rename(abnormal_DNA_ID = dna_oac,
+         normal_DNA_ID = dna_normal) %>%
+  unite(
+    col = DNA_ID,
+    abnormal_DNA_ID,
+    normal_DNA_ID,
+    remove = FALSE,
+    sep = '_vs_'
+  ) %>%
+  inner_join(.,
+             occams_wgs_thesis_cohort,
+             'ID')
+
+WGD_BO_status <- inner_join(OAC_per_sample_ploidy, occams_710_wgs_thesis_cohort %>% select(DNA_ID, Phenotype), "DNA_ID")
+
+write_csv(WGD_BO_status, 'data/processed/paper/WGD_status_20240507.csv')
+```
+
+## WGD
+```{r}
+UK_phenotype_labs <- c(
+  "BE/IM EAC" = "BE+ve EAC",
+  "Non-BE/IM EAC" = "BE-ve EAC",
+  "Unknown BE/IM EAC" = "BE(?) EAC"
+)
+
+wgd_per_pheno <- WGD_BO_status %>% 
+  filter(WGD=='TRUE') %>% 
+  group_by(Phenotype, WGD) %>% 
+  count(name = 'n_WGD') %>% 
+  mutate(prop_WGD0 = 
+           case_when(Phenotype=='BE/IM EAC' ~  n_WGD / 252,
+           Phenotype=='Non-BE/IM EAC' ~  n_WGD / 183,
+           Phenotype=='Unknown BE/IM EAC' ~  n_WGD / 275)) %>% 
+  mutate(prop_WGD = as.double(round(prop_WGD0, digits = 3)*100))
+
+
+
+
+
+WGD_BO_status %>% 
+  filter(WGD=='TRUE') %>% 
+  group_by(Phenotype, WGD) %>% 
+  count(name = 'n_WGD') %>% 
+  mutate(prop_WGD0 = 
+           case_when(Phenotype=='BE/IM EAC' ~  n_WGD / 252,
+           Phenotype=='Non-BE/IM EAC' ~  n_WGD / 183,
+           Phenotype=='Unknown BE/IM EAC' ~  n_WGD / 275)) %>% 
+  mutate(prop_WGD = as.double(round(prop_WGD0, digits = 3)*100)) %>%
+  ggplot(aes(Phenotype, prop_WGD)) +
+  geom_col(width = .75) +
+  scale_x_discrete(labels = UK_phenotype_labs) +
+  xlab('Phenotype')+
+  ylab('% of WGD cases')+
+  # ggpubr::stat_compare_means() +
+  scale_y_continuous(limits = c(0,81)) +
+  theme_bw() +
+      theme(legend.position = 'none',
+        # axis.ticks.y.left = element_blank(),
+        # axis.text.y.left = element_blank(),
+        # axis.title.x = element_blank(), 
+        # axis.title.y = element_blank(), 
+        axis.text.x = element_text(size = 12, angle = 0),
+        axis.text.y = element_text(size = 12),
+        ) 
+chisq.test(WGD_BO_status$WGD, WGD_BO_status$Phenotype)
+
+```
+
+## Aneuploidy
+
+```{r}
+WGD_BO_status %>% 
+  ggplot(aes(Phenotype, Ploidy)) +
+  geom_boxplot(width = .45) +
+  geom_jitter(width = .1, size = .5, alpha = 0.5) +
+  scale_x_discrete(labels = UK_phenotype_labs) +
+  xlab('Phenotype')+
+  ylab('Estimated ploidy')+
+  # ylab('Ploidy (GISTIC 2.0 estimate)')+
+  # ggpubr::stat_compare_means() +
+    theme_bw() +
+      theme(legend.position = 'none',
+        # axis.ticks.y.left = element_blank(),
+        # axis.text.y.left = element_blank(),
+        # axis.title.x = element_blank(), 
+        # axis.title.y = element_blank(), 
+        axis.text.x = element_text(size = 12, angle = 0),
+        axis.text.y = element_text(size = 12)
+        ) 
+
+
+WGD_BO_status %>% 
+  group_by(Phenotype) %>% 
+  summarise(median_ploidy = median(Ploidy),
+            IQR = quantile(Ploidy))
+```
+

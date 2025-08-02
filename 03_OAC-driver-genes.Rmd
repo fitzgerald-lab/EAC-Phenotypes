@@ -1,0 +1,394 @@
+---
+title: "03_OAC-driver-genes"
+author: "Shawn Zamani"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+# packages ----------------------------------------------------------------
+library(tidyverse)
+library(ggplot2)
+# library(reshape2) 
+# library(GenVisR)
+```
+
+# read and prepare data
+
+## cohort
+
+```{r}
+occams_wgs_thesis_cohort <- read_csv('data/processed/wgs_processed/occams_thesis_wgs_cohort_20230402.csv')
+
+occams_710_wgs_thesis_cohort <-
+  vroom::vroom('data/original/wgs/case_spec_dna_occams_oac_normal.710.csv',
+               col_names = FALSE) %>%
+  transmute(
+    ID = str_replace(X1, 'OC/', 'OCCAMS/'),
+    spec_oac = X2,
+    dna_oac = X3,
+    dna_normal = X4
+  ) %>%
+  select(-spec_oac) %>%
+  rename(abnormal_DNA_ID = dna_oac,
+         normal_DNA_ID = dna_normal) %>%
+  unite(
+    col = DNA_ID,
+    abnormal_DNA_ID,
+    normal_DNA_ID,
+    remove = FALSE,
+    sep = '_vs_'
+  ) %>%
+  inner_join(.,
+             occams_wgs_thesis_cohort,
+             'ID')
+  
+```
+
+## snv & ind
+
+The data frame below was processed under the somatic project folder. See '00_OAC_parse-vep-snv-indel_join-epi.R' in that project directory for the code.
+
+```{r}
+# original data under the somatic analysis dir
+# OAC_SNV_INDEL_VEP_df <- vroom::vroom('data/processed_data/OAC_SNV_INDEL_VEP_df_20220214.csv')
+# OAC_SNV_INDEL_VEP_df <- vroom::vroom('data/original/wgs/710_drivers/OAC_SNV_INDEL_VEP_df_20220214.csv')
+# 
+# OAC_MPE_SNV_INDEL_VEP_dataset <-
+#   inner_join(
+#     OAC_SNV_INDEL_VEP_df,
+#     occams_710_wgs_thesis_cohort,
+#     c("DNA_ID", "abnormal_DNA_ID", "normal_DNA_ID")
+#   )
+```
+
+## cnv
+
+The data frame below was processed under the somatic project folder. See '01_OAC_parse-gistic_join-snv-indel-epi.R' in that project directory for the code.
+
+```{r}
+# original data under the somatic analysis dir
+# vroom::vroom_write(CNA_oac_long_format_df, 'data/processed_data/oac_CNA_pt_log_format_df_20230403.csv')
+# CNA_oac_long_format_df <- vroom::vroom('data/original/wgs/710_drivers/oac_CNA_pt_log_format_df_20230403.csv')
+# 
+# OAC_MPE_CNA_dataset <-  
+#   inner_join(
+#     CNA_oac_long_format_df,
+#     occams_710_wgs_thesis_cohort,
+#     c("DNA_ID", "abnormal_DNA_ID", "normal_DNA_ID")
+# )
+```
+
+## combine
+
+```{r}
+# stack cna and snv/indels on top of each other to create a data frame with all the CNA/SNV/ID and the epid data
+# OAC_MPE_SNV_INDEL_CNA_VEP_dataset <- bind_rows(OAC_MPE_CNA_dataset, OAC_MPE_SNV_INDEL_VEP_dataset) %>% 
+#   ungroup(.) %>% 
+#   relocate(names(OAC_MPE_SNV_INDEL_VEP_dataset)) %>% 
+#   relocate(c(CNA, amp_del_value), .after = alt_type) %>% 
+#   arrange(ID) %>% 
+#   mutate(parsed_consequence_grouped_c = case_when(
+#     CNA == 'GAIN' ~ 'CNA_GAIN',
+#     CNA == 'LOSS' ~ 'CNA_LOSS',
+#     CNA == 'NEUTRAL' ~ 'CNA_NEUTRAL',
+#     TRUE ~ parsed_consequence_grouped_c
+#   )) 
+
+# write_csv(OAC_MPE_SNV_INDEL_CNA_VEP_dataset, 'data/processed/wgs_processed/OAC_MPE_SNV_INDEL_CNA_VEP_dataset_20220217.csv')
+
+OAC_MPE_SNV_INDEL_CNA_VEP_dataset <- read_csv('data/processed/wgs_processed/OAC_MPE_SNV_INDEL_CNA_VEP_dataset_20220217.csv')
+# OAC_MPE_SNV_INDEL_CNA_VEP_dataset_og <- read_csv('../../Somatic/somatic-analysis/data/processed_data/OAC_MPE_SNV_INDEL_CNA_VEP_dataset_20220217.csv')
+```
+
+
+# waterfall plots
+
+
+```{r}
+library(GenVisR)
+```
+
+## prepare data/visuals
+```{r}
+# keep only copy number variations
+cna_oncoplot <- OAC_MPE_SNV_INDEL_CNA_VEP_dataset %>% 
+  filter(amp_del_value <= -2 | amp_del_value >= 2) %>% 
+  filter(parsed_consequence_grouped_c %in% c('CNA_GAIN', 'CNA_LOSS')) %>% 
+  rename(sample = abnormal_DNA_ID, gene = gene_name, variant_class = parsed_consequence_grouped_c) %>% 
+  select(c('sample', 'gene', 'variant_class', Phenotype))
+
+# keep only SNV/INS
+snv_oncoplot <- OAC_MPE_SNV_INDEL_CNA_VEP_dataset %>% 
+  filter(parsed_consequence_grouped_c != 'Synonymous') %>% # only take functional muts
+  filter(parsed_consequence_grouped_c != 'CNA_NEUTRAL') %>%
+  filter(parsed_consequence_grouped_c != 'CNA_GAIN') %>%
+  filter(parsed_consequence_grouped_c != 'CNA_LOSS') %>%
+  rename(sample = abnormal_DNA_ID, gene = gene_name, variant_class = parsed_consequence_grouped_c) %>% 
+  select(c('sample', 'gene', 'variant_class', Phenotype))
+
+snv_cna_oncolplot_all <- bind_rows(cna_oncoplot, snv_oncoplot) %>% select(-Phenotype)
+snv_cna_oncolplot_bo_pos <- bind_rows(cna_oncoplot, snv_oncoplot) %>% filter(Phenotype=="BE/IM EAC")
+snv_cna_oncolplot_bo_neg <- bind_rows(cna_oncoplot, snv_oncoplot) %>% filter(Phenotype=="Non-BE/IM EAC")
+snv_cna_oncolplot_bo_unk <- bind_rows(cna_oncoplot, snv_oncoplot) %>% filter(Phenotype=="Unknown BE/IM EAC")
+
+snv_cna_oncolplot_all %>% 
+  group_by(Phenotype, sample) %>% 
+  count(sort = T) %>% 
+  # select(Phenotype, n) -> kruskal 
+  # kruskal_test(formula = n~Phenotype, kruskal)
+  # mutate(all='all') %>% 
+  # group_by(all) %>% 
+  group_by(Phenotype) %>%
+  summarise(median = median(n), iqrr = quantile(n)) 
+
+kruskal.test(kruskal$n, kruskal$Phenotype)
+
+```
+
+## Charlotte
+
+She need the % of cases with both TP53 and SMAD4
+
+```{r}
+kras_smad4_all_muts <- snv_cna_oncolplot_all %>% 
+  select(-variant_class) %>% 
+  filter(gene %in% c('TP53', 'SMAD4')) %>% 
+  pivot_wider(names_from = gene, values_from = gene, values_fill = list(gene = 0), 
+              values_fn = list(gene = ~ as.integer(length(.x) > 0))) %>%
+  mutate(across(where(is.integer), ~ ifelse(. == 1, 1, 0)))
+
+
+kras_smad4 %>% filter(TP53 == 1)
+kras_smad4 %>% filter(SMAD4 ==1)
+kras_smad4 %>% filter(TP53 == 1 & SMAD4 ==1)
+
+kras_smad4_cna_muts <- cna_oncoplot %>% 
+  # select(-c(variant_class, Phenotype)) %>% 
+  filter(gene %in% c('TP53', 'SMAD4')) %>% 
+  pivot_wider(names_from = gene, values_from = gene, values_fill = list(gene = 0), 
+              values_fn = list(gene = ~ as.integer(length(.x) > 0))) %>%
+  mutate(across(where(is.integer), ~ ifelse(. == 1, 1, 0)))
+  
+kras_smad4_cna_muts %>% filter(TP53 == 1 & SMAD4 ==1)
+```
+
+
+```{r}
+mutation_priority <-
+  as.character(
+    c(
+      'Nonsense',
+      'Missense',
+      'Indel',
+      'CNA_GAIN',
+      'CNA_LOSS',
+      'Splice',
+      'Other nonsynonymous'
+    )
+  )
+
+mutationColours <-
+  c(
+    "CNA_LOSS" = '#377EB8',
+    "CNA_GAIN" = '#E41A1C',
+    # 'NA' = '#FFFFFF', 
+    # "frame_shift_ins" = '#CF5A59',
+    "Missense" = '#ff9b34',
+    "Nonsense" = '#750054',
+    # "splice_site" = '#A80079',
+    "Indel" = '#009933',
+    "Splice" = '#ca66ae',
+    "Other nonsynonymous" = '#888811'
+  )
+```
+
+## all cohort
+
+```{r}
+pdf(file="output/wgs_results/plot_waterfall-all-oac.pdf", height=10, width=15)
+waterfall(snv_cna_oncolplot_all,
+          fileType = "Custom",
+          variant_class_order = mutation_priority,
+          mainPalette = mutationColours,
+          # clinData = OAC_path_epid_data_GenVisR,
+          mainRecurCutoff = 0.1,
+          plot_proportions = T,
+          mainGrid = F,
+          # mainLabelSize = 0,
+          # clinLegCol = 4,
+          section_heights = c(0, 2, .5),
+          main_geneLabSize = 12,
+          # clinVarOrder = 
+          # clinVarCol = clinVarCol,
+          # sampOrder = sample_order_plot,  
+          plotMutBurden = FALSE)
+dev.off()
+```
+
+## BO+ cohort
+```{r}
+pdf(file="output/wgs_results/plot_waterfall-bo-pos-oac.pdf", height=3, width=15)
+waterfall(snv_cna_oncolplot_bo_pos,
+          fileType = "Custom",
+          variant_class_order = mutation_priority,
+          mainPalette = mutationColours,
+          # clinData = OAC_path_epid_data_GenVisR,
+          # mainRecurCutoff = 0.1,
+          # plot_proportions = T,
+          mainGrid = F,
+          # mainLabelSize = 0,
+          # clinLegCol = 4,
+          section_heights = c(0, 2),
+          main_geneLabSize = 11,
+          # clinVarOrder = 
+          # clinVarCol = clinVarCol,
+          # sampOrder = sample_order_plot,  
+          plotMutBurden = FALSE)
+dev.off()
+
+```
+
+## BO- cohort
+```{r}
+pdf(file="output/wgs_results/plot_waterfall-bo-neg-oac.pdf", height=3, width=15)
+waterfall(snv_cna_oncolplot_bo_neg,
+          fileType = "Custom",
+          variant_class_order = mutation_priority,
+          mainPalette = mutationColours,
+          # clinData = OAC_path_epid_data_GenVisR,
+          mainRecurCutoff = 0.1,
+          # plot_proportions = T,
+          mainGrid = F,
+          # mainLabelSize = 0,
+          # clinLegCol = 4,
+          section_heights = c(0, 2),
+          main_geneLabSize = 12,
+          # clinVarOrder = 
+          # clinVarCol = clinVarCol,
+          # sampOrder = sample_order_plot,  
+          plotMutBurden = FALSE)
+dev.off()
+```
+
+## BO? cohort
+```{r}
+pdf(file="output/wgs_results/plot_waterfall-bo-unk-oac.pdf", height=3, width=15)
+waterfall(snv_cna_oncolplot_bo_unk,
+          fileType = "Custom",
+          variant_class_order = mutation_priority,
+          mainPalette = mutationColours,
+          # clinData = OAC_path_epid_data_GenVisR,
+          mainRecurCutoff = 0.1,
+          # plot_proportions = T,
+          mainGrid = F,
+          # mainLabelSize = 0,
+          # clinLegCol = 4,
+          section_heights = c(0, 2),
+          main_geneLabSize = 12,
+          # clinVarOrder = 
+          # clinVarCol = clinVarCol,
+          # sampOrder = sample_order_plot,  
+          plotMutBurden = FALSE)
+dev.off()
+```
+
+# muations in shared genes
+
+```{r}
+list1 <- c("APC", "GATA6", "ABCB1", "LRRK2", "PCDH17", "MUC6", "KCNQ3", "KRAS", "SMAD4", "ARID1A", "CDKN2A", "TP53")
+list2 <- c("NIPBL", "APC", "KCNQ3", "SLIT2", "GATA6", "LRRK2", "ABCB1", "PCDH17", "ARID1A", "SMAD4", "MUC6", "KRAS", "CDKN2A", "TP53")
+list3 <- c("PCDH17", "EPHA3", "LRRK2", "KRAS", "MUC6", "NAV3", "SMAD4", "ARID1A", "KCNQ3", "CDKN2A", "TP53")
+list4 <- c("CHL1", "MUC6", "KRAS", "MYC", "ERBB2", "KCNQ3", "PIK3CA", "TSHZ3", "CCND1", "NOTCH1", "SMAD4", "LRRK2", "ABCB1", "APC", "GATA6", "PCDH17", "ARID1A", "CDKN2A", "TP53")
+
+common_genes <- Reduce(intersect, list(list1, list2, list3, list4))
+common_genes_no_overall <- Reduce(intersect, list(list2, list3, list4))
+
+
+# Find the unique items in each list
+unique_list1 <- setdiff(list1, union(list2, list3, list4))
+unique_list2 <- setdiff(list2, union(list1, list3, list4))
+unique_list3 <- setdiff(list3, union(list1, list2, list4))
+unique_list4 <- setdiff(list4, union(list1, list2, list3))
+
+# Print the unique items in each list
+print(unique_list1)
+print(unique_list2)
+print(unique_list3)
+print(unique_list4)
+
+
+UK_phenotype_labs <- c(
+  "BE/IM EAC" = "BO+ve OAC",
+  "Non-BE/IM EAC" = "BO-ve OAC",
+  "Unknown BE/IM EAC" = "BO(?) OAC"
+)
+
+
+OAC_MPE_SNV_INDEL_CNA_VEP_dataset %>% group_by(alt_type, CNA, amp_del_value, parsed_consequence_grouped_c) %>% count()
+OAC_MPE_SNV_INDEL_CNA_VEP_dataset %>% 
+  filter(
+    (alt_type %in% c("snv", "del", "ins")) |
+    (is.na(alt_type) & amp_del_value <= -2 | amp_del_value >= 2) |
+      CNA == 'NEUTRAL'
+    ) %>% 
+    mutate( # recode to gene mutation to MT or WT
+    functional_mut = case_when(
+      parsed_consequence_grouped_c %in% c(
+        "Nonsense",
+        "Missense",
+        "Splice",
+        "Indel",
+        "CNA_GAIN",
+        "CNA_LOSS",
+        "Other nonsynonymous"
+      ) ~ "1_MT",
+      parsed_consequence_grouped_c %in% c("Synonymous", "CNA_NEUTRAL") ~ "0_WT"
+    )) %>% 
+  distinct(DNA_ID, Phenotype, gene_name, functional_mut) %>% 
+  filter(functional_mut=='1_MT') %>% 
+  group_by(Phenotype, gene_name, functional_mut) %>% 
+  count(name = 'n_mutated') %>% 
+  mutate(prop_mutated0 = 
+           case_when(Phenotype=='BE/IM EAC' ~  n_mutated / 252,
+           Phenotype=='Non-BE/IM EAC' ~  n_mutated / 183,
+           Phenotype=='Unknown BE/IM EAC' ~  n_mutated / 275)) %>% 
+  mutate(prop_mutated = as.double(round(prop_mutated0, digits = 3)*100)) %>%
+  ungroup(.) %>% 
+  filter(gene_name %in% common_genes) %>% 
+  mutate(gene_name = factor(gene_name,
+    c(
+      "TP53",
+      "CDKN2A",
+      "SMAD4",
+      "KRAS",
+      "LRRK2",
+      "MUC6",
+      "PCDH17",
+      "KCNQ3",
+      "ARID1A"
+    ),
+    ordered = T
+  )) %>% 
+  ggplot(aes(Phenotype, prop_mutated)) +
+  geom_col() +
+  facet_wrap(vars(gene_name)) +
+  scale_x_discrete(labels = UK_phenotype_labs) +
+  xlab('Phenotype')+
+  ylab('% of mutated cases')+
+  scale_y_continuous(limits = c(0,81)) +
+  theme_bw() +
+      theme(legend.position = 'none',
+        # axis.ticks.y.left = element_blank(),
+        # axis.text.y.left = element_blank(),
+        # axis.title.x = element_blank(), 
+        # axis.title.y = element_blank(), 
+        axis.text.x = element_text(size = 12, angle = 35, vjust = 1, hjust=1),
+        axis.text.y = element_text(size = 12)
+        ) 
+  # stat_compare_means()
+  
+```
+
