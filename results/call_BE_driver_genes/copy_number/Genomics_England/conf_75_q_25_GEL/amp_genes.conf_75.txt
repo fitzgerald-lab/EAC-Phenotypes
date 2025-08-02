@@ -1,0 +1,34 @@
+cytoband	18q11.2	3p14.2	7p14.1	
+q value	4.1928e-05	0.23947	0.23947	
+residual q value	4.1928e-05	0.23947	0.23947	
+wide peak boundaries	chr18:14284477-21638761	chr3:59298345-61253231	chr7:38578077-39987688	
+genes in wide peak	hsa-mir-1-2	FHIT	AMPH	
+	hsa-mir-320c-1		RALA	
+	hsa-mir-3156-2		POU6F2	
+	GATA6		VPS41	
+	LAMA3		YAE1D1	
+	NPC1		FAM183B	
+	RBBP8		LINC00265	
+	ROCK1		LOC646999	
+	SNRPD1			
+	RIOK3			
+	C18orf8			
+	MIB1			
+	CTAGE1			
+	GREB1L			
+	TMEM241			
+	CABLES1			
+	ESCO1			
+	TTC39C			
+	ANKRD29			
+	ABHD3			
+	CYP4F35P			
+	ANKRD30B			
+	POTEC			
+	MIR1-2			
+	MIR133A1			
+	CXADRP3			
+	LOC644669			
+	MIR320C1			
+	MIR3156-2			
+	MIR4741			

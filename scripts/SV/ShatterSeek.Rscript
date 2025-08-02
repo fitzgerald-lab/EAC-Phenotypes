@@ -1,0 +1,186 @@
+.libPaths(c("/mnt/scratchc/stlab-icgc/users/ng02/R3.6/library", "/home/ng02/miniconda3/envs/R3.6/lib/R/library")) 
+
+require(tidyverse)
+require(ShatterSeek)
+require(gridExtra)
+require(stringi)
+
+## Detecting Chromotripsis using ShatterSeek
+
+all.vcfs <- list.files('manta', 
+                       full.names = T, 
+                       all.files = T, 
+                       recursive = T, 
+                       include.dirs = F)
+
+ascat <- list.files('ascat', full.names = T)
+## use caveman files from Sarah
+cave <- ascat[grepl('cave',ascat)]
+
+all.sample.names <- gsub('.+/', '', gsub('__.+', '', all.vcfs))
+run.shatterseek <- function(sample.name){ 
+
+test.cave <- cave[grepl(paste0(sample.name, '.*cave*'), cave)]
+test.manta <- all.vcfs[grepl(sample.name, all.vcfs)]
+cave.df <- read_csv(test.cave) %>% filter(Chromosome != 'Y')
+
+## filter events that are not in Sarah's list
+manta.df <- read_tsv(test.manta) %>% mutate(newId = paste(ID, sample.name, sep=':'))  %>%distinct()
+
+## make SVType into PCAWG format
+manta.df <- manta.df %>% mutate(svclass = ifelse(Type == 'BND', 'TRA', Type)) 
+
+manta.df <- manta.df %>% 
+  mutate(svclass = ifelse(Type == 'INV' & Strand1=='+' & Strand2=='+' , 'h2hINV', svclass))  %>% 
+  mutate(svclass = ifelse(Type == 'INV' & Strand1=='-' & Strand2=='-', 't2tINV', svclass)) %>% 
+  mutate(Chrom1 = str_remove(Chrom1, 'chr'), Chrom2 = str_remove(Chrom2, 'chr') ) %>% 
+  select(Chrom1, Chrom2, Start1, Start2, Strand1, Strand2, svclass) %>%  
+  filter(Chrom1 != 'Y' & Chrom2 !='Y') %>% 
+  filter(svclass != 'INS') %>% 
+  distinct()
+
+## make a SVData object
+svData <- SVs(chrom1 = as.character(manta.df$Chrom1), 
+              pos1 = manta.df$Start1, 
+              chrom2 = as.character(manta.df$Chrom2), 
+              pos2 = manta.df$Start2,
+              strand1 = as.character(manta.df$Strand1),
+              strand2 = as.character(manta.df$Strand2), 
+              SVtype = as.character(manta.df$svclass))
+
+cnData <- CNVsegs(chrom = cave.df$Chromosome, 
+                  start = cave.df$Start, 
+                  end = cave.df$End, 
+                  total_cn = cave.df$Total_CN)
+
+## fix a bug in ShatterSeek, need to fix if statement to include sum() !=0 before chisq.test
+#fixInNamespace(statistical_criteria, ns = 'ShatterSeek') 
+chromothripsis <- shatterseek(SV.sample=svData, seg.sample=cnData)
+}
+
+## Run Shatter seek
+
+## run and save in a lapply object
+
+if (file.exists('Shatterseek-new.RData')){
+  load('Shatterseek-new.RData')
+} else{ 
+  #all.sample.names <- cave.samples
+  all.sample.run <- lapply(setNames(object = all.sample.names, nm = all.sample.names), run.shatterseek)
+  #all.sample.run <- lapply(setNames(object = sample.name, nm = sample.name), run.shatterseek)
+  save(all.sample.run, file = 'Shatterseek2.RData')
+  }
+
+## Debug Shatterseek
+
+# start_time <- Sys.time()
+# debug(shatterseek)
+# undebug(shatterseek)
+# undebug(statistical_criteria)
+# 
+# ##demo case 
+# SV_data <- SVs(chrom1=as.character(SV_DO17373$chrom1),
+# pos1=as.numeric(SV_DO17373$start1),
+# chrom2=as.character(SV_DO17373$chrom2),
+# pos2=as.numeric(SV_DO17373$end2),
+# SVtype=as.character(SV_DO17373$svclass),
+# strand1=as.character(SV_DO17373$strand1),
+# strand2=as.character(SV_DO17373$strand2))
+# 
+# CN_data <- CNVsegs(chrom=as.character(SCNA_DO17373$chromosome),
+# start=SCNA_DO17373$start,
+# end=SCNA_DO17373$end,
+# total_cn=SCNA_DO17373$total_cn)
+# 
+# debug(shatterseek)
+# undebug(SVs)
+# test.1 <- run.shatterseek('LP2000105-DNA_A01')
+# 
+# #chromothripsis <- shatterseek(SV.sample=SV_data, seg.sample=CN_data)
+# ## lin 337 if (nrow(SVsnow) != 0 & sum(obs2)!=0) {
+# fixInNamespace(statistical_criteria, ns = 'ShatterSeek') 
+# chromothripsis <- shatterseek(SV.sample=svData, seg.sample=cnData)
+
+plot.shatter <- function(sample.name){
+  chr.object <- all.sample.run[[sample.name]]
+  ## get regions with high or low confidence 
+  events <- chromo.events %>% filter(grepl('High', confidence) & Sample==sample.name) %>% select(chrom) %>% pull()
+  
+  ## select chromosomes with low confidence chromotripsis
+  chrs <- chr.object@chromSummary %>% filter( chrom %in% events) %>% select(chrom) %>% pull()
+  if (length(chrs) > 0 ){ 
+    plot.list <- lapply(chrs, function(chromosome){  
+      plots_chr <-  plot_chromothripsis(ShatterSeek_output = chr.object,
+                                        chr = chromosome) 
+      plot_chr <-  arrangeGrob(plots_chr[[1]],
+                               plots_chr[[2]],
+                               plots_chr[[3]],
+                               plots_chr[[4]], nrow=4, ncol=1,heights=c(0.3,1.2,0.6,1) )
+      plot_chr
+      
+    })
+     g <-  marrangeGrob(plot.list, nrow = 1, ncol = 1)
+     ggsave(paste0('chromotripsis/', sample.name, '.high.chromothripsis.pdf'), g)
+   
+    
+  }
+  
+}
+
+
+## PCAWG criteria for filtering 
+
+#- High confidence: at least 6 interleaved intrachromosomal SVs, 7 contiguous segments oscil- lating between 2 CN states, the fragment joins test, and either the chromosomal enrichment or the exponential distribution of breakpoints test.
+#- High confidence: at least 3 interleaved intrachromosomal SVs and 4 or more interchromosomal SVs, 7 contiguous segments oscillating between 2 CN states and the fragment joins test.
+#- Low confidence: at least 6 interleaved intrachromosomal SVs, 4, 5 or 6 adjacent segments os- cillating between 2 CN states, the fragment joins test, and either the chromosomal enrichment or the exponential distribution of breakpoints test.
+
+## OCCAMS/AH/173
+## possible events at chr 1, 8, 11, 14 according to PCAWGV
+#test.case <- c('LP2000108-DNA_A01') 
+
+#if (file.exists('ShatterSeek-chromotripsis-predicted.tsv')){
+#  chromo.events <- read_tsv('ShatterSeek-chromotripsis-predicted.tsv')	    
+#} else{
+
+## generate plots 
+#lapply(names(all.sample.run), plot.shatter)
+
+## add labels to which events are high or low conf 
+#sample.name <- test.case 
+
+## Use PCAWG filters for identifying SVs.
+#event.list <- lapply(names(all.sample.run), function(sample.name){
+#  chr.object <- all.sample.run[[sample.name]]@chromSummary
+  
+#  ## add in counts for each inter and interleaved TRA *check this again*
+#  chr.object <- chr.object %>% 
+#    mutate(number_inter_TRA = unlist( map(stringi::stri_split_regex(inter_other_chroms_coords_all, ':|\n', omit_empty = T), 
+#                                          function(x) if(x != ' ')  length(x) else 0))) %>%  
+#    mutate(Sample = sample.name, 
+#           number_intra_TRA = clusterSize_including_TRA -  number_TRA)
+  
+  ## low confidence cases are between 4-6 segments with ocilating copy number
+#  chr.object <- chr.object %>%  mutate(confidence = if_else( number_intra_TRA >=6 & max_number_oscillating_CN_segments_2_states %in% c(4,5,6) 
+#                                                             & (pval_fragment_joins < 0.05 | chr_breakpoint_enrichment < 0.05 | pval_exp_cluster < 0.05  ), 
+#                                                             'Low', ''))
+  
+  ## first criterion 
+#  chr.object <- chr.object %>%  mutate(confidence =  ifelse( number_intra_TRA >= 6 & max_number_oscillating_CN_segments_2_states >= 7 & (pval_fragment_joins < 0.05 | chr_breakpoint_enrichment < 0.05 | pval_exp_cluster < 0.05  ) | 
+#                                                              ( number_intra_TRA >=3 &  max_number_oscillating_CN_segments_2_states >= 7 & number_inter_TRA >= 4 & pval_fragment_joins < 0.05), 'High', confidence) ## second criterion
+#  ) 
+#  
+#})
+
+## merge into a large table 
+#chromo.events <- do.call(rbind, event.list) %>% arrange(factor(confidence, levels = c('High', 'Low', '', NA)), factor(Sample, levels = all.sample.names)) %>%  select(Sample, confidence, everything())
+#
+#  write_tsv(chromo.events, 'ShatterSeek-chromotripsis-predicted1.tsv', quote_escape = F)
+#
+#}
+
+## include both high and low confidence counts 
+#chromo.events.counts <- chromo.events %>% filter(confidence %in% c('High', 'Low')) %>% group_by(Sample) %>% summarise(chromo.counts = n()) 
+
+#save(chromo.events, chromo.events.counts, file='GM_SV_chromotripsis1.RData')
+
+ 

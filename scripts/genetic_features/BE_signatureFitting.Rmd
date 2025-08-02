@@ -1,0 +1,300 @@
+---
+title: "Signature Fitting"
+output:
+  html_document: default
+  pdf_document: default
+date: "2024-09-18"
+---
+
+The aim of this script is to estimate the contributions of known COSMIC SBS mutational signatures to the mutation profiles of 284 Barrett's esophagus (BE) samples obtained from GEL (n=79) and non-GEL (n=205) cohorts. Following this, we compare the signature loads and contributions between the two cohorts, as well as across developing stages of BE.
+
+For fitting, we will use the R package deconstructSigs (Rosenthal et al. 2016). This is a very simple method which fits known 96-part mutational signatures using a modified linear regression model. We will fit the signatures generated in Abbas et al. 2023, who obtained them from a cohort including 161 BE samples, 777 primary EAC samples, and 59 metastatic samples.
+
+```{r load libraries, message=FALSE}
+library(tidyverse) # for dataframe manipulation
+library(deconstructSigs) # for signature fitting
+library(pheatmap) # heatmap fitting
+library(ggpubr) # plotting
+library(readxl) # for reading XLSX files
+library(ggrepel) # for plotting labels
+```
+
+## Load data
+
+Input data for deconstructSigs consists of counts for each of the 96 trinucleotide contexts forming the SBS signatures. These dataframes were obtained from VCF files using SigProfilerMatrixGenerator (Bergstrom et al. 2019). Since the GEL cohort was aligned to hg38 and the non-GEL cohort was aligned to hg19, they will be stored and analysed separately.
+
+To ensure that these data frame have the correct structure for applying deconstructSigs, they are transposed and reorganised to have the same order of columns as the 'randomly.generated.tumors' object contained within deconstructSigs.
+
+```{r data}
+gel <- read.delim('Data/SamplesGEL_run20240912.SBS96.all', row.names = 1)
+gel <- t(gel) %>% as.data.frame %>% select(colnames(randomly.generated.tumors))
+
+print(paste0('The GEL cohort consists of ', nrow(gel), ' samples'))
+print(gel[1:5,1:5])
+
+nongel <- read.delim('Data/SamplesNonGEL_run20240912.SBS96.all', row.names = 1)
+nongel <- t(nongel) %>% as.data.frame %>% select(colnames(randomly.generated.tumors))
+
+print(paste0('The non-GEL cohort consists of ', nrow(nongel), ' samples'))
+print(nongel[1:5,1:5])
+```
+
+# Signature Fitting with deconstructSigs
+
+Next, we will fit the known COSMIC mutational signatures to the data frames generated here. These can be obtained from the COSMIC resource (https://cancer.sanger.ac.uk/signatures/downloads/). Since the extracted signatures are marginally different for hg19 and hg38, both sets of signatures are loaded and reorganised to mirror the 'signatures.cosmic' object included in deconstructSigs.
+
+The v3.3.1 version of the signatures has been selected since these were also used for signature fitting in Abbas et al., despite v3.4 having since been created. Additionally, the v3.4 signature set includes decomposed SBS40 signatures, which do not match with the current set of signatures available.
+
+The SBS signatures extracted from Abbas et al. are as follows: 
+
+* SBS1 (ageing)
+* SBS2 (APOBEC)
+* SBS3 (homologous recombination deficiency)
+* SBS5 (ageing)
+* SBS8 (unknown)
+* SBS17a (unknown)
+* SBS17b (unknown)
+* SBS18 (reactive oxygen species)
+* SBS28 (unknown)
+* SBS30 (base excision repair deficiency)
+* SBS35 (platinum treatment)
+* SBS40 (ageing)
+* SBS41 (A-T rich motif)
+* SBS44 (mismatch repair deficiency)
+
+```{r loading signatures}
+# Sort the hg19 reference signatures
+sigs.hg19 <- read.table('COSMIC_Signatures/COSMIC_v3.3.1_SBS_GRCh37.txt', header = TRUE, row.names = 1)
+sigs.hg19 <- t(sigs.hg19) %>% as.data.frame %>% select(colnames(signatures.cosmic))
+
+# Sort the hg38 reference signatures
+sigs.hg38 <- read.table('COSMIC_Signatures/COSMIC_v3.3.1_SBS_GRCh38.txt', header = TRUE, row.names = 1)
+sigs.hg38 <- t(sigs.hg38) %>% as.data.frame %>% select(colnames(signatures.cosmic))
+
+# Define signatures to include
+sigs.include <- paste0('SBS', c(1,2,3,5,8,'17a','17b',18,28,30,35,40,41,44))
+```
+
+## Fitting signatures to the GEL cohort
+
+As previously stated, since the GEL and non-GEL cohorts were aligned to different reference genomes, it is best practice to analyse them separately, before combining and comparing results.
+
+```{r fit GEL cohort}
+# Define dataframe to which fitted samples will be added
+gel.complete <- data.frame()
+
+# Each sample is fitted individually using the whichSignatures() function, with the results added to the 'gel.complete' object
+for (sample in rownames(gel)) {
+  
+  sigs.sample <- whichSignatures(tumor.ref = gel, # count dataframe
+                                 signatures.ref = sigs.hg38[sigs.include, ], # signatures to be fitted
+                                 sample.id = sample, # sample to be fitted
+                                 tri.counts.method = 'default', # defines normalisation in the case of exome comparisons
+                                 contexts.needed = TRUE, # since this is only mutation counts
+                                 signature.cutoff = 0 # no minimum signature contribution
+                                 )
+  gel.complete <- rbind(gel.complete, sigs.sample$weights)
+  
+}
+
+# Plot signature contributions
+cols_scale <- colorRampPalette(colors = c('white','navy'))(1000)
+pheatmap(t(gel.complete), main = 'GEL cohort (n = 79)',
+         show_colnames = FALSE, color = cols_scale)
+
+```
+
+## Fitting signatures to the non-GEL cohort
+
+This is repeated for the non-GEL cohort using the hg19 reference signatures.
+
+```{r fit non-GEL cohort}
+# Define dataframe to which fitted samples will be added
+nongel.complete <- data.frame()
+
+# Each sample is fitted individually using the whichSignatures() function, with the results added to the 'nongel.complete' object
+for (sample in rownames(nongel)) {
+  
+  sigs.sample <- whichSignatures(tumor.ref = nongel, # count dataframe
+                                 signatures.ref = sigs.hg19[sigs.include, ], # signatures to be fitted
+                                 sample.id = sample, # sample to be fitted
+                                 tri.counts.method = 'default', # defines normalisation in the case of exome comparisons
+                                 contexts.needed = TRUE, # since this is only mutation counts
+                                 signature.cutoff = 0 # no minimum signature contribution
+                                 )
+  nongel.complete <- rbind(nongel.complete, sigs.sample$weights)
+  
+}
+
+# Plot signature contributions
+cols_scale <- colorRampPalette(colors = c('white','navy'))(1000)
+pheatmap(t(nongel.complete), main = 'non-GEL cohort (n = 205)',
+         show_colnames = FALSE, color = cols_scale)
+
+```
+
+## Collate signature contributions
+
+Finally, these signature contributions can be collated, plotted, and saved.
+
+```{r signature collation}
+sigs.complete <- rbind(nongel.complete, gel.complete)
+save(sigs.complete, file = 'sigs.allBEsamples.normalised.20240912.Rdata')
+
+# Plot signature contributions
+sigs.plot <- sigs.complete %>%
+  mutate(Sample = rownames(sigs.complete)) %>%
+  pivot_longer(cols = -Sample, names_to = 'Signature', values_to = 'Proportion') %>%
+  mutate(Signature = factor(Signature,
+                            levels = c('SBS44','SBS41','SBS40','SBS35',
+                                       'SBS30','SBS28','SBS8','SBS5','SBS3',
+                                       'SBS2','SBS1','SBS18','SBS17b','SBS17a')))
+
+# Rank samples by Signature 17 contribution
+sigs.s17 <- sigs.plot %>%
+  filter(Signature %in% c('SBS17a','SBS17b')) %>%
+  group_by(Sample) %>%
+  summarise(SBS17 = sum(Proportion)) %>%
+  arrange(desc(SBS17))
+
+sigs.plot$Sample <- factor(sigs.plot$Sample, levels = sigs.s17$Sample)
+
+ggplot(sigs.plot, aes(x = Sample, y = Proportion, fill = Signature)) +
+  geom_bar(stat = 'identity') +
+  theme(axis.text.x = element_blank())
+```
+
+# Comparisons across cohorts and BE stages
+
+These data offer an opportunity to investigate any substantial deviations between the GEL and non-GEL cohorts, as well as changes in signature proportions and loads across stages of BE.
+
+Firstly, this requires the relevant metadata, which is loaded here. Since SigProfiler requires some edited file names in order to read samples as individuals, the sequence IDs in the metadata will also have to be altered. The cohort label is also added for ease of comparisons downstram.
+
+```{r load metadata}
+# Load non-GEL cohort metadata
+meta.nongel <- readxl::read_excel('Metadata/non-gel_metadata.xlsx')
+
+# For samples starting with 'SLX', remove the SLX element.
+meta.nongel$sequence_id[grepl(pattern = 'SLX',meta.nongel$sequence_id)] <- sapply(
+  meta.nongel$sequence_id[grepl(pattern = 'SLX',meta.nongel$sequence_id)], function(x)
+    strsplit(x,split='[.]')[[1]][2]
+)
+# For samples starting with 'LP', replace '-' with '.'
+meta.nongel$sequence_id[grepl(pattern = 'LP',meta.nongel$sequence_id)] <- sapply(
+  meta.nongel$sequence_id[grepl(pattern = 'LP',meta.nongel$sequence_id)], function(x)
+    paste(strsplit(x,split='-')[[1]],collapse='.')
+)
+meta.nongel$Cohort <- 'non-GEL'
+
+
+# Load GEL cohort metadata
+meta.gel <- read.csv('Metadata/gel_metadata.csv')
+
+# Replace '-' with '.'
+meta.gel$sequence_id <- sapply(meta.gel$sequence_id, function(x)
+  paste(strsplit(x,split='-')[[1]],collapse='.'))
+meta.gel$Cohort <- 'GEL'
+
+# Combine metadata
+meta <- rbind(meta.nongel[,c('sequence_id','specimen_phenotype','Cohort')],
+              meta.gel[,c('sequence_id','specimen_phenotype','Cohort')])
+
+# Replace any reference to 'Barretts' with 'NDBE' (non-dysplastic Barrett's esophagus), and factorise specimen phenotypes in increasing orders of progression (ID = unknown)
+meta$specimen_phenotype[meta$specimen_phenotype %in% c("barrett's","Barrett's","barretts")] <- 'NDBE'
+meta$specimen_phenotype <- factor(meta$specimen_phenotype,
+                                  levels = c('ID','NDBE','LGD','HGD','IMC'))
+
+# Define comparison groups for further analysis
+compare_groups <- list(c('NDBE','LGD'), c('LGD','HGD'), c('NDBE','HGD')) 
+
+```
+
+Using solely the metadata, we can check how BE stages vary between the two cohorts. In particular, we see that non-dysplastic BE is dominant in the non-GEL cohort, whereas dysplastic BE is dominant in the GEL cohort. This may explain variation in signatures downstream.
+
+```{r compare BE stages}
+# Count phenotypes by cohort
+count_pheno <- meta %>%
+  group_by(Cohort, specimen_phenotype) %>% summarise(count = n())
+
+ggplot(count_pheno, aes(x = Cohort, y = count, fill = specimen_phenotype)) +
+  theme_bw() +
+  geom_bar(stat = 'identity', position = 'fill')
+```
+
+## Tumor Mutation Burden
+
+We can use the initial input data to calculate total mutations, to see if these vary across cohorts and BE stages. We observe that dysplastic samples have generally higher mutation burdens than non-dysplastic samples. Consequently, the GEL cohort, which contains a greater proportion of dyplastic samples, displays generally greater mutation burdens.
+
+```{r tumour mutation burden}
+# Collate 'gel' and 'nongel' dataframes and calculate TMBs
+cohortFull <- rbind(gel, nongel)
+TMB <- data.frame(
+  sequence_id = rownames(cohortFull),
+  TotalMutation = apply(cohortFull, 1, sum)
+)
+TMB$log_MutationLoad <- log10(TMB$TotalMutation + 1)
+
+# Combine with metadata, and compare TMBs across cohorts and BE stages
+TMB <- merge(x = TMB, y = meta)
+
+g1 <- ggboxplot(TMB, x = 'specimen_phenotype', y = 'log_MutationLoad',
+                color = 'specimen_phenotype', add = 'jitter') +
+  theme_bw() + stat_compare_means(comparisons = compare_groups) +
+  theme(legend.position = 'top', legend.title = element_blank())
+g2 <- ggboxplot(TMB, x = 'Cohort', y = 'log_MutationLoad',
+                color = 'Cohort', add = 'jitter') +
+  theme_bw() + stat_compare_means() +
+  theme(legend.position = 'top', legend.title = element_blank())
+
+ggarrange(plotlist = list(g1, g2))
+```
+
+## Signature 17 Proportions and Contributions across BE stages
+
+Now that we have calculated signature proportions using deconstructSigs, we can also estimate signature contributions by multiplying these proportions by TMB. This can allow us to compare signature profiles across cohorts, and also across BE stages. In particular, we can pay close attention to Signature 17.
+
+```{r SBS17 across stages}
+# Combine signature proportion object with TMB object containing the metadata
+sigs.plot_full <- merge(x = sigs.plot, y = TMB,
+                        by.x = 'Sample', by.y = 'sequence_id')
+sigs.plot_full$Contribution <- sigs.plot_full$Proportion * sigs.plot_full$TotalMutation
+
+# Calculate SBS17 proportion and contribution
+sigs.plot_s17 <- sigs.plot_full %>%
+  filter(Signature %in% c('SBS17a','SBS17b')) %>%
+  group_by(Sample, specimen_phenotype, Cohort) %>% 
+  summarise(Sig17_Proportion = sum(Proportion),
+            Sig17_Contribution = sum(Contribution)) %>%
+  mutate(Sig17_log_Contribution = log10(Sig17_Contribution + 1)) 
+
+# Compare Sig17 proportions and contributions across phenotypes
+ggboxplot(sigs.plot_s17, x = 'specimen_phenotype', y = 'Sig17_Proportion',
+          add = 'jitter', color = 'specimen_phenotype') +
+  theme_bw() + stat_compare_means(comparisons = compare_groups) +
+  facet_wrap(~Cohort)
+
+# Compare Sig17 contributions and contributions across phenotypes
+ggboxplot(sigs.plot_s17, x = 'specimen_phenotype', y = 'Sig17_log_Contribution',
+          add = 'jitter', color = 'specimen_phenotype') +
+  theme_bw() + stat_compare_means(comparisons = compare_groups) +
+  facet_wrap(~Cohort)
+```
+
+Finally, we can save the global signature contributions, as contained in the sigs.plot_full data frame. It should be further noted that these contributions are the result of Proportion * TotalMutationLoad, since it is not possible to accurately determine which mutations are technically assigned to which signatures.
+
+As these contributions are saved as a column, we must pivot it out in order to reflect the dimensions of the data frame of proportions 'sigs.complete'.
+
+```{r Save Global Signature Contributions}
+sigs.contr <- sigs.plot_full %>%
+  mutate(Contribution = round(Contribution)) %>% # rounds total contributions to nearest whole number
+  select(Sample, Signature, Contribution) %>%
+  pivot_wider(names_from = Signature, values_from = Contribution, values_fill = 0) %>%
+  as.data.frame()
+
+rownames(sigs.contr) <- sigs.contr$Sample; sigs.contr <- sigs.contr[,-1]
+sigs.contr <- sigs.contr[rownames(sigs.complete), colnames(sigs.complete)] # match dimensions to sigs.complete
+
+# Save dataframe
+save(sigs.contr, file = 'sigs.allBEsamples.contributions.20241014.Rdata')
+```
+
