@@ -1,3 +1,5 @@
+###  clinical logistic regression models 
+
 library(tidyverse)
 library(finalfit)
 
@@ -148,3 +150,78 @@ summary_factorlist(dependent,
   select(-c(fit_id, index)) %>%    
   kableExtra::kable(row.names = F) %>%
   kableExtra::kable_styling(full_width = F)
+
+
+###  integrated genomics/clinical logistic regression model
+
+
+predictors <-
+  genomic_epid_cohort %>% select(
+    dem_age_group,
+    dem_gender,
+    smk_ever_smoked,
+    med_taken_nsaids,
+    sym_heartburn_inferred,
+    dem_bmi_group,
+    SBS17,
+    pth_pTNM,
+    WGD,
+    total_count_per_mb,
+    total_driver_count,
+    CDKN2A_mut, 
+    fraction_aberrant
+  ) %>% names(.) 
+
+# Initialize an empty dataframe to store model results
+all_univariable_results <- data.frame()
+
+# Loop through each predictor and fit a model
+for (predictor in predictors) {
+  model <- glm(phenotype ~ ., family = binomial(), data = genomic_epid_cohort[, c("phenotype", predictor)])
+  tidy_model <- tidy(model, exponentiate = TRUE, conf.int = TRUE)
+  tidy_model$Predictor <- predictor  # Add a column for the predictor name
+  all_univariable_results <- rbind(all_univariable_results, tidy_model)
+}
+
+# View results
+filtered_univariable_results
+
+# List of main predictors
+predictors <- c(
+  "pth_pTNM",
+  "total_driver_count",
+  "CDKN2A_mut",
+  "SBS17",
+  "WGD",
+  "total_count_per_mb",
+  "fraction_aberrant"
+)
+
+# Adjustment set - common covariates included in every model
+adjustment_set <- c("dem_age_group", "dem_gender", "smk_ever_smoked", "sym_heartburn_inferred", "dem_bmi_group")
+
+# Initialize an empty dataframe to store model results
+all_adjusted_univariable_results <- data.frame()
+
+# Loop through each predictor and fit a model with the adjustment set
+for (predictor in predictors) {
+  formula <- as.formula(paste(
+    "phenotype ~",
+    predictor,
+    "+",
+    paste(adjustment_set, collapse = " + ")
+  ))
+  model <- glm(formula, family = binomial(), data = df_combined4)
+  tidy_model <- tidy(model, exponentiate = TRUE, conf.int = TRUE)
+  tidy_model$Predictor <- predictor # Add a column for the predictor name
+  # tidy_model$Formula <- formula
+  all_adjusted_univariable_results <- rbind(
+    all_adjusted_univariable_results,
+    tidy_model
+  )
+}
+
+
+
+
+
