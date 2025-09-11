@@ -1,0 +1,7 @@
+"variable","p_value","statistic"
+"numBiopsies",0.977,837.5
+"numMutations",0.2075,981.5
+"numDriverMutations",0.5587,906
+"numClonesWithDriver",0.8326,864.5
+"numTruncalMutations",0.5983,900
+"numSubclonalMutations",0.3776,939.5
