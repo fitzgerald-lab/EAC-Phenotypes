@@ -11,7 +11,7 @@ The files are organized into three main folders:
 
 | Data              | Description                  | Source(s)              | Demo data              |
 |:------------------|:-----------------------------|:-----------------------|:-----------------------|
-| Whole-genome and -exome sequencing data | Genomic data inlcuded in the current study. Access request may be required per repository | https://ega-archive.org/datasets/EGAD00001015467; https://ega-archive.org/studies/EGAS00001003702; https://research.genomicsengland.co.uk/research-registry/browse/ | [↗️]([https://github.com/fitzgerald-lab/EAC-Phenotypes/tree/main/data/genomic]) |
+| Whole-genome and -exome sequencing data | Genomic data inlcuded in the current study. Access request may be required per repository | https://ega-archive.org/datasets/EGAD00001015467; https://ega-archive.org/studies/EGAS00001003702; https://research.genomicsengland.co.uk/research-registry/browse/ | [↗️](https://github.com/fitzgerald-lab/EAC-Phenotypes/tree/main/data/genomic) |
 | Clinical data | Clinical and epidemiological data for regression models | Full dataset request via https://www.occams.org.uk/index.html | [↗️](https://github.com/fitzgerald-lab/EAC-Phenotypes/tree/main/data/epidemiological)
 
 
