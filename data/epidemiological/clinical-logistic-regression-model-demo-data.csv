@@ -1,0 +1,212 @@
+phenotype	dem_age_group	dem_gender	dem_bmi_group	smk_ever_smoked	med_taken_nsaids	acid_suppressant	sym_heartburn_inferred	pth_pTNM
+BE/IM EAC	60 - 69 years old	male	missing	missing	missing	missing	missing	missing
+BE/IM EAC	50 - 59 years old	male	normal	Y	missing	Y	Y	missing
+BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	Y	Y	missing
+Non-BE/IM EAC	60 - 69 years old	male	missing	Y	missing	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	missing	Y	missing	missing	Y	I
+BE/IM EAC	< 50 years old	male	obese	Y	Y	Y	Y	missing
+BE/IM EAC	50 - 59 years old	male	normal	Y	N	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	N	Y	Y	III
+BE/IM EAC	60 - 69 years old	female	obese	Y	N	Y	Y	I
+Non-BE/IM EAC	60 - 69 years old	male	normal	Y	N	N	N	III
+BE/IM EAC	70+ years old	male	missing	missing	missing	missing	missing	II
+BE/IM EAC	50 - 59 years old	male	obese	Y	Y	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	normal	Y	Y	Y	Y	III
+Non-BE/IM EAC	50 - 59 years old	male	obese	N	N	N	N	III
+Non-BE/IM EAC	50 - 59 years old	male	overweight	N	Y	Y	Y	III
+BE/IM EAC	50 - 59 years old	male	missing	Y	Y	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	overweight	Y	Y	Y	Y	I
+BE/IM EAC	70+ years old	male	overweight	N	Y	Y	Y	II
+Non-BE/IM EAC	60 - 69 years old	male	normal	Y	Y	Y	Y	III
+BE/IM EAC	50 - 59 years old	male	overweight	Y	N	Y	Y	missing
+BE/IM EAC	50 - 59 years old	male	overweight	Y	Y	Y	Y	I
+Non-BE/IM EAC	70+ years old	male	overweight	Y	Y	Y	Y	III
+BE/IM EAC	60 - 69 years old	female	overweight	Y	Y	Y	Y	III
+Non-BE/IM EAC	70+ years old	female	overweight	N	Y	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	missing	N	Y	Y	Y	IV
+Non-BE/IM EAC	< 50 years old	female	obese	N	N	Y	Y	III
+Non-BE/IM EAC	50 - 59 years old	male	normal	Y	N	Y	Y	II
+Non-BE/IM EAC	50 - 59 years old	male	normal	Y	Y	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	female	normal	Y	Y	Y	Y	II
+BE/IM EAC	70+ years old	male	missing	Y	N	Y	Y	II
+Non-BE/IM EAC	50 - 59 years old	male	overweight	Y	Y	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	missing	N	Y	Y	Y	IV
+BE/IM EAC	60 - 69 years old	male	overweight	Y	Y	Y	Y	II
+BE/IM EAC	70+ years old	male	obese	Y	missing	Y	Y	II
+Non-BE/IM EAC	60 - 69 years old	male	normal	Y	Y	Y	Y	II
+BE/IM EAC	70+ years old	male	overweight	Y	N	Y	Y	missing
+BE/IM EAC	70+ years old	male	obese	Y	Y	Y	Y	I
+BE/IM EAC	50 - 59 years old	male	overweight	Y	N	Y	Y	II
+BE/IM EAC	70+ years old	female	missing	missing	missing	missing	missing	II
+BE/IM EAC	60 - 69 years old	male	obese	Y	Y	Y	Y	III
+Non-BE/IM EAC	50 - 59 years old	male	obese	Y	Y	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	missing	N	N	Y	Y	III
+BE/IM EAC	70+ years old	female	missing	N	missing	missing	missing	III
+BE/IM EAC	50 - 59 years old	male	overweight	Y	N	Y	Y	missing
+BE/IM EAC	60 - 69 years old	female	missing	N	missing	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	overweight	Y	N	N	N	III
+BE/IM EAC	70+ years old	male	overweight	Y	N	Y	Y	III
+Non-BE/IM EAC	< 50 years old	male	overweight	Y	missing	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	Y	Y	missing
+BE/IM EAC	70+ years old	male	obese	N	missing	missing	missing	I
+Non-BE/IM EAC	70+ years old	female	overweight	N	missing	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	Y	Y	I
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	missing	missing	III
+Non-BE/IM EAC	50 - 59 years old	male	overweight	N	missing	Y	Y	IV
+BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	N	N	I
+Non-BE/IM EAC	50 - 59 years old	male	obese	Y	Y	N	N	I
+Non-BE/IM EAC	50 - 59 years old	male	obese	N	missing	missing	missing	II
+Non-BE/IM EAC	70+ years old	male	overweight	N	missing	missing	missing	III
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	missing	missing	III
+BE/IM EAC	50 - 59 years old	male	normal	Y	missing	Y	Y	III
+Non-BE/IM EAC	50 - 59 years old	male	normal	N	missing	N	N	II
+BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	N	N	I
+BE/IM EAC	60 - 69 years old	female	normal	N	missing	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	Y	Y	Y	missing
+BE/IM EAC	60 - 69 years old	male	obese	N	missing	Y	Y	missing
+Non-BE/IM EAC	60 - 69 years old	male	obese	N	missing	missing	missing	II
+BE/IM EAC	50 - 59 years old	male	overweight	Y	missing	Y	Y	III
+Non-BE/IM EAC	70+ years old	male	normal	Y	missing	missing	missing	I
+Non-BE/IM EAC	60 - 69 years old	female	normal	Y	missing	Y	Y	missing
+Non-BE/IM EAC	50 - 59 years old	male	normal	Y	missing	missing	missing	III
+BE/IM EAC	60 - 69 years old	male	obese	Y	missing	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	overweight	N	missing	Y	Y	I
+BE/IM EAC	60 - 69 years old	male	normal	N	missing	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	normal	Y	missing	missing	missing	III
+Non-BE/IM EAC	70+ years old	female	overweight	Y	missing	N	N	III
+BE/IM EAC	70+ years old	male	overweight	N	Y	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	male	obese	Y	Y	Y	Y	I
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	missing	missing	II
+Non-BE/IM EAC	60 - 69 years old	male	obese	Y	Y	Y	Y	III
+Non-BE/IM EAC	70+ years old	male	overweight	N	Y	N	N	III
+Non-BE/IM EAC	70+ years old	male	normal	Y	missing	Y	Y	IV
+Non-BE/IM EAC	50 - 59 years old	male	obese	N	missing	missing	missing	III
+Non-BE/IM EAC	60 - 69 years old	male	overweight	N	missing	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	obese	Y	missing	Y	Y	II
+Non-BE/IM EAC	60 - 69 years old	male	obese	N	missing	missing	missing	III
+BE/IM EAC	70+ years old	male	normal	Y	Y	missing	missing	I
+BE/IM EAC	70+ years old	female	normal	N	missing	Y	Y	I
+Non-BE/IM EAC	60 - 69 years old	male	missing	missing	missing	missing	missing	missing
+BE/IM EAC	60 - 69 years old	male	normal	N	Y	Y	Y	I
+BE/IM EAC	70+ years old	male	obese	N	Y	Y	Y	III
+BE/IM EAC	< 50 years old	male	missing	missing	missing	missing	missing	missing
+Non-BE/IM EAC	70+ years old	female	missing	missing	missing	missing	missing	II
+Non-BE/IM EAC	70+ years old	male	normal	Y	Y	N	N	III
+BE/IM EAC	60 - 69 years old	male	normal	Y	Y	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	normal	Y	N	N	N	II
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	N	Y	Y	III
+Non-BE/IM EAC	50 - 59 years old	male	overweight	N	N	N	N	II
+BE/IM EAC	60 - 69 years old	male	normal	N	Y	Y	Y	III
+BE/IM EAC	70+ years old	male	normal	Y	Y	missing	missing	III
+BE/IM EAC	50 - 59 years old	male	missing	missing	missing	missing	missing	II
+Non-BE/IM EAC	70+ years old	male	overweight	Y	missing	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	missing	missing	missing	missing	missing	missing
+BE/IM EAC	70+ years old	male	missing	missing	missing	missing	missing	III
+Non-BE/IM EAC	70+ years old	male	missing	missing	missing	missing	missing	III
+BE/IM EAC	60 - 69 years old	male	overweight	Y	Y	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	normal	Y	Y	Y	Y	I
+BE/IM EAC	< 50 years old	male	overweight	Y	Y	Y	Y	missing
+Non-BE/IM EAC	70+ years old	male	missing	missing	missing	missing	missing	II
+Non-BE/IM EAC	70+ years old	male	overweight	Y	Y	Y	Y	missing
+BE/IM EAC	70+ years old	male	overweight	Y	missing	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	obese	Y	missing	Y	Y	II
+Non-BE/IM EAC	70+ years old	female	normal	Y	missing	missing	missing	missing
+BE/IM EAC	60 - 69 years old	male	missing	missing	missing	missing	missing	II
+BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	Y	Y	III
+Non-BE/IM EAC	< 50 years old	male	overweight	N	Y	Y	Y	II
+Non-BE/IM EAC	70+ years old	female	overweight	Y	missing	N	N	III
+Non-BE/IM EAC	60 - 69 years old	female	missing	missing	missing	missing	missing	III
+Non-BE/IM EAC	70+ years old	female	overweight	N	missing	N	N	missing
+BE/IM EAC	70+ years old	male	normal	Y	Y	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	overweight	N	missing	Y	Y	I
+BE/IM EAC	70+ years old	male	missing	missing	missing	missing	missing	III
+BE/IM EAC	60 - 69 years old	male	overweight	N	missing	Y	Y	I
+BE/IM EAC	60 - 69 years old	male	overweight	N	N	N	N	I
+BE/IM EAC	60 - 69 years old	female	overweight	Y	missing	Y	Y	III
+BE/IM EAC	70+ years old	male	normal	N	N	Y	Y	II
+Non-BE/IM EAC	60 - 69 years old	female	overweight	N	N	Y	Y	III
+Non-BE/IM EAC	< 50 years old	male	normal	Y	N	N	N	II
+BE/IM EAC	60 - 69 years old	male	overweight	Y	N	N	N	III
+BE/IM EAC	60 - 69 years old	male	obese	Y	missing	Y	Y	missing
+Non-BE/IM EAC	70+ years old	male	overweight	Y	missing	missing	missing	missing
+Non-BE/IM EAC	60 - 69 years old	male	obese	Y	missing	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	Y	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	missing	missing	missing	missing	missing	III
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	Y	Y	Y	II
+Non-BE/IM EAC	70+ years old	female	normal	N	missing	missing	missing	III
+Non-BE/IM EAC	70+ years old	male	obese	N	Y	Y	Y	III
+Non-BE/IM EAC	70+ years old	male	normal	N	missing	N	N	III
+BE/IM EAC	60 - 69 years old	male	overweight	N	missing	missing	missing	missing
+BE/IM EAC	60 - 69 years old	male	obese	Y	missing	Y	Y	II
+BE/IM EAC	50 - 59 years old	male	obese	N	missing	Y	Y	III
+Non-BE/IM EAC	50 - 59 years old	female	overweight	Y	missing	Y	Y	II
+Non-BE/IM EAC	70+ years old	female	normal	Y	missing	N	N	III
+Non-BE/IM EAC	60 - 69 years old	male	normal	N	missing	Y	Y	missing
+BE/IM EAC	60 - 69 years old	male	overweight	N	Y	Y	Y	III
+BE/IM EAC	50 - 59 years old	male	obese	Y	missing	missing	missing	III
+Non-BE/IM EAC	70+ years old	male	obese	Y	missing	Y	Y	III
+BE/IM EAC	70+ years old	male	obese	Y	missing	missing	missing	I
+BE/IM EAC	60 - 69 years old	male	obese	N	Y	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	overweight	N	missing	missing	missing	II
+Non-BE/IM EAC	70+ years old	male	overweight	N	missing	Y	Y	III
+BE/IM EAC	70+ years old	male	normal	N	missing	missing	missing	missing
+Non-BE/IM EAC	70+ years old	male	overweight	N	missing	missing	missing	III
+BE/IM EAC	70+ years old	male	overweight	Y	missing	Y	Y	III
+BE/IM EAC	70+ years old	male	overweight	N	Y	Y	Y	III
+Non-BE/IM EAC	70+ years old	male	overweight	Y	missing	N	N	III
+Non-BE/IM EAC	60 - 69 years old	female	normal	Y	missing	missing	missing	missing
+Non-BE/IM EAC	60 - 69 years old	male	missing	missing	missing	missing	missing	I
+BE/IM EAC	60 - 69 years old	male	normal	Y	missing	missing	missing	III
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	missing	missing	II
+BE/IM EAC	60 - 69 years old	male	obese	N	missing	missing	missing	missing
+Non-BE/IM EAC	50 - 59 years old	male	obese	N	missing	N	N	II
+BE/IM EAC	60 - 69 years old	male	obese	Y	missing	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	normal	Y	missing	Y	Y	III
+BE/IM EAC	70+ years old	male	normal	N	missing	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	obese	Y	missing	Y	Y	missing
+BE/IM EAC	70+ years old	male	normal	Y	Y	Y	Y	III
+Non-BE/IM EAC	50 - 59 years old	male	overweight	Y	Y	Y	Y	missing
+BE/IM EAC	< 50 years old	male	normal	N	missing	Y	Y	missing
+BE/IM EAC	70+ years old	male	overweight	Y	missing	Y	Y	missing
+BE/IM EAC	70+ years old	male	overweight	Y	missing	missing	missing	II
+Non-BE/IM EAC	60 - 69 years old	female	normal	Y	missing	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	male	normal	N	missing	missing	missing	III
+Non-BE/IM EAC	60 - 69 years old	male	obese	Y	missing	Y	Y	missing
+BE/IM EAC	60 - 69 years old	male	normal	N	missing	Y	Y	II
+BE/IM EAC	50 - 59 years old	male	normal	Y	missing	Y	Y	IV
+Non-BE/IM EAC	60 - 69 years old	male	normal	Y	missing	N	N	III
+BE/IM EAC	< 50 years old	male	obese	N	missing	missing	missing	III
+BE/IM EAC	70+ years old	male	normal	N	missing	missing	missing	III
+Non-BE/IM EAC	50 - 59 years old	female	normal	Y	missing	Y	Y	III
+Non-BE/IM EAC	70+ years old	male	normal	N	missing	missing	missing	missing
+BE/IM EAC	60 - 69 years old	male	obese	N	missing	missing	missing	II
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	male	normal	Y	missing	missing	missing	missing
+BE/IM EAC	60 - 69 years old	male	normal	Y	missing	N	N	missing
+Non-BE/IM EAC	60 - 69 years old	male	normal	Y	missing	Y	Y	missing
+Non-BE/IM EAC	60 - 69 years old	male	normal	N	missing	missing	missing	III
+BE/IM EAC	60 - 69 years old	male	obese	Y	Y	Y	Y	missing
+BE/IM EAC	70+ years old	male	normal	N	Y	Y	Y	I
+BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	Y	Y	III
+BE/IM EAC	50 - 59 years old	female	obese	Y	missing	missing	missing	missing
+BE/IM EAC	50 - 59 years old	male	obese	Y	missing	missing	missing	III
+Non-BE/IM EAC	50 - 59 years old	male	overweight	Y	missing	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	male	overweight	Y	missing	missing	missing	missing
+Non-BE/IM EAC	70+ years old	male	obese	N	missing	missing	missing	II
+Non-BE/IM EAC	50 - 59 years old	male	normal	Y	missing	missing	missing	III
+Non-BE/IM EAC	70+ years old	male	overweight	Y	missing	Y	Y	II
+Non-BE/IM EAC	60 - 69 years old	male	overweight	N	missing	Y	Y	missing
+BE/IM EAC	60 - 69 years old	male	normal	N	Y	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	male	obese	Y	missing	Y	Y	missing
+BE/IM EAC	50 - 59 years old	male	normal	Y	missing	Y	Y	II
+BE/IM EAC	60 - 69 years old	male	overweight	Y	Y	Y	Y	I
+Non-BE/IM EAC	60 - 69 years old	male	normal	N	missing	Y	Y	missing
+Non-BE/IM EAC	60 - 69 years old	male	missing	Y	Y	Y	Y	I
+Non-BE/IM EAC	50 - 59 years old	male	obese	Y	Y	Y	Y	III
+BE/IM EAC	60 - 69 years old	male	overweight	Y	Y	Y	Y	I
+Non-BE/IM EAC	50 - 59 years old	male	normal	Y	missing	missing	missing	II
+Non-BE/IM EAC	60 - 69 years old	male	normal	Y	missing	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	male	normal	Y	N	Y	Y	III
+Non-BE/IM EAC	60 - 69 years old	male	normal	Y	missing	missing	missing	III
+BE/IM EAC	70+ years old	male	obese	Y	N	N	N	III
+BE/IM EAC	70+ years old	male	normal	Y	Y	N	N	III
