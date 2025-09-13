@@ -1,4 +1,4 @@
-This repository contains the data files and analysis code used in **"Integrated epidemiological and molecular data yields insights into the relationship between precancerous Barrett’s and oesophageal adenocarcinoma"** published in [journal name] on [date]. 
+This repository contains the data and code for **"Integrated epidemiological and molecular data yields insights into the relationship between precancerous Barrett’s and oesophageal adenocarcinoma"** published in [journal name] on [date]. 
 
 # Overview
 The files are organized into three main folders:
@@ -9,6 +9,8 @@ The files are organized into three main folders:
 
 # Data availability
 
+The data that support the findings of this work are available via the following sources:
+
 | Data              | Description                  | Source(s)              | Demo data              |
 |:------------------|:-----------------------------|:-----------------------|:-----------------------|
 | Whole-genome and -exome sequencing data | Genomic data inlcuded in the current study. Access request may be required per repository | https://ega-archive.org/datasets/EGAD00001015467; https://ega-archive.org/studies/EGAS00001003702; https://research.genomicsengland.co.uk/research-registry/browse/ | [↗️](https://github.com/fitzgerald-lab/EAC-Phenotypes/tree/main/data/genomic) |
@@ -16,7 +18,10 @@ The files are organized into three main folders:
 
 
 
-# Set up
+# Code availability
+
+All working codes, software packages, and code libraries are published in this repository. The table and information below includes the tools and libraries in this work.   
+
 ## Tools and libraries
 
 | Tool & Version              | Purpose                      | Input data          | Output results                   | Source(s)                                    |
