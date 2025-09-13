@@ -20,7 +20,7 @@ The data that support the findings of this work are available via the following 
 
 # Code availability
 
-All working codes, software packages, and code libraries are published in this repository. The table and information below includes the tools and libraries in this work.   
+All working codes, software packages, and libraries are published in this repository. The table and information below includes the details of the tools and libraries in this work.   
 
 ## Tools and libraries
 
