@@ -7,10 +7,20 @@ The files are organized into three main folders:
 - scripts: contains analysis code to reproduce the analysis.
 - results: filtered results generated from the soruce files.
 
+# Data availability
+
+| Data              | Description                  | Source(s)              | Demo data              |
+|:------------------|:-----------------------------|:-----------------------|:-----------------------|
+| Whole-genome and -exome sequencing data | Genomic data inlcuded in the current study. Access request may be required per repository | https://ega-archive.org/datasets/EGAD00001015467; https://ega-archive.org/studies/EGAS00001003702; https://research.genomicsengland.co.uk/research-registry/browse/ | [↗️]([url](https://github.com/fitzgerald-lab/EAC-Phenotypes/tree/main/data/genomic)) |
+| Transcriptomics data | 
+| Clinical data 
+
+
+
 # Set up
 ## Tools and libraries
 
-| Tool & Version              | Purpose                      | Input data          | Output results                   | Source                                    |
+| Tool & Version              | Purpose                      | Input data          | Output results                   | Source(s)                                    |
 |:----------------------------|:-----------------------------|:--------------------|:---------------------------------|:------------------------------------------|
 | Strelka (2.9.4 for Genomics England WGS data, 2.0.15 for other WGS data) | Call somatic mutations and indels  | Aligned sequencing data (.bam files) | Somatic SNVs and indels          | https://github.com/Illumina/strelka       |
 | ASCAT 2.1                   | Call copy number for data not from Genomics England | Aligned .bam files  | Allele-specific copy number profiles     | https://github.com/VanLoo-lab/ascat       |
