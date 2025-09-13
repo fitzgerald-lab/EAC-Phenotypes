@@ -21,7 +21,14 @@ The files are organized into three main folders:
 | dNdScv 0.1.0                | Identify positively selected | SNV/indel mutation  | List of significant driver genes | https://github.com/im3sanger/dndscv       |
 | SigProfilerExtractor & deconstructSigs | Identify and quantify mutational signatures | VCF files with SNVs and  indels | Sample-specific mutational signatures and contributions | https://github.com/AlexandrovLab/SigProfilerExtractor; https://github.com/raerose01/deconstructSigs |
 | Amplicon Architect 1.2 &  Amplicon Classifier 0.4.13 | Reconstruct and classify amplified genomic regions (e.g., ecDNA, BFB) | Aligned .bam files  | Amplicon structures and classifications | https://github.com/virajbdeshpande/AmpliconArchitect; https://github.com/AmpliconSuite/AmpliconClassifier |
-
+| ShatterSeek 1.1      | To identify chromothripsis events    | Structural variants + copy number profiles  | Predicted chromothripsis events | https://github.com/parklab/ShatterSeek   |
+| GATK Mutect2 4.1.7.0 | Call somatic mutations in WES samples    | Aligned .bam files      | Somatic SNV and indel calls   | https://gatk.broadinstitute.org/hc/en-us/articles/360036485152-Mutect2 |
+| ClonEvol 0.99.11     | Construct phylogenetic trees of tumour evolution  | Subclonal populations data   | Reconstructed clonal phylogenies | https://github.com/hdng/clonevol         |
+| PyClone 0.13.1       | Infer subclonal populations from SNV data   | Somatic mutation table  | Subclonal clusters with VAF and CCF estimates  | https://github.com/Roth-Lab/pyclone      |
+| REVOLVER 1.0.0       | Infer evolutionary trajectories across patient cohort | Subclonal mutation profiles from multiple regions  | Evolutionary trees, clusters, and recurrent trajectories | https://github.com/caravagnalab/revolve  |
+| Space Ranger 3.1.3   | Process 10x Genomics Visium HD spatial transcriptomics data | Raw FASTQ and image data | Aligned gene expression matrices and spatial metadata | http://github.com/10XGenomics/spaceranger    |
+| Loupe Browser 8.1.2  | Visualize and analyze spatial transcriptomics data | Space Ranger output files     | Interactive spatial gene expression plots  | https://www.10xgenomics.com/support/software/loupe-browser/latest     |
+| Scanpy 1.11.1        | Analyze spatial gene expression matrices          | Gene expression matrix        | Cluster annotations and spatial plots | https://github.com/scverse/scanpy        |
 
 Required libraries (any version)
 ```
