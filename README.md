@@ -28,17 +28,27 @@ The files are organized into three main folders:
 | REVOLVER 1.0.0       | Infer evolutionary trajectories across patient cohort | Subclonal mutation profiles from multiple regions  | Evolutionary trees, clusters, and recurrent trajectories | https://github.com/caravagnalab/revolve  |
 | Space Ranger 3.1.3   | Process 10x Genomics Visium HD spatial transcriptomics data | Raw FASTQ and image data | Aligned gene expression matrices and spatial metadata | http://github.com/10XGenomics/spaceranger    |
 | Loupe Browser 8.1.2  | Visualize and analyze spatial transcriptomics data | Space Ranger output files     | Interactive spatial gene expression plots  | https://www.10xgenomics.com/support/software/loupe-browser/latest     |
-| Scanpy 1.11.1        | Analyze spatial gene expression matrices          | Gene expression matrix        | Cluster annotations and spatial plots | https://github.com/scverse/scanpy        |
+| Scanpy 1.11.1        | Analyze spatial gene expression matrices          | Gene expression matrix        | Cluster annotations and spatial plots | https://github.com/scverse/scanpy |
 
-Required libraries (any version)
+Required R libraries (any version)
+
 ```
-library(tidyverse)
+# data wrangling
+library(tidyverse) 
+
+# imputation
+library(mice)
+
+# model building
 library(finalfit)
 library(broom)
 library(performance)
+
+# organizing results
 library(table1)
 library(kableExtra)
 ```
-Local computing environment
+
+## Local computing environment
 
 R version 4.3.2, Platform: x86_64-conda-linux-gnu (64-bit), macOS Ventura 13.3.1
