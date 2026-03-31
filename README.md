@@ -1,4 +1,4 @@
-This repository contains the data and code for **"Integrated epidemiological and molecular data yields insights into the relationship between precancerous Barrett’s and oesophageal adenocarcinoma"** published in [journal name] on [date]. 
+This repository contains the data and code for **"Integrated epidemiological and molecular data inform the relationship between precancer and cancer states of esophageal adenocarcinoma"** published in Nature Medicine (DOI: 10.1038/s41591-026-04331-8). 
 
 # Overview
 The files are organized into three main folders:
