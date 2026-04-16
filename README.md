@@ -1,4 +1,4 @@
-This repository contains the data and code for **"Integrated epidemiological and molecular data inform the relationship between precancer and cancer states of esophageal adenocarcinoma"** published in Nature Medicine (DOI: 10.1038/s41591-026-04331-8). 
+This repository contains the data and code for **"Integrated epidemiological and molecular data inform the relationship between precancer and cancer states of esophageal adenocarcinoma"** published in Nature Medicine (DOI: [10.1038/s41591-026-04331-8](https://doi.org/10.1038/s41591-026-04331-8). 
 
 # Overview
 The files are organized into three main folders:
@@ -15,8 +15,6 @@ The data that support the findings of this work are available via the following 
 |:------------------|:-----------------------------|:-----------------------|:-----------------------|
 | Whole-genome and -exome sequencing data | Genomic data inlcuded in the current study. Access request may be required per repository | https://ega-archive.org/datasets/EGAD00001015467; https://ega-archive.org/studies/EGAS00001003702; https://research.genomicsengland.co.uk/research-registry/browse/ | [↗️](https://github.com/fitzgerald-lab/EAC-Phenotypes/tree/main/data/genomic) |
 | Clinical data | Clinical and epidemiological data for regression models | Full dataset request via https://www.occams.org.uk/index.html | [↗️](https://github.com/fitzgerald-lab/EAC-Phenotypes/tree/main/data/epidemiological)
-
-
 
 # Code availability
 
@@ -66,3 +64,6 @@ library(kableExtra)
 ## Local computing environment
 
 R version 4.3.2, Platform: x86_64-conda-linux-gnu (64-bit), macOS Ventura 13.3.1
+
+# Citation
+Zamani, S.A., Wu, L., Black, E.L. et al. Integrated epidemiological and molecular data inform the relationship between precancer and cancer states of esophageal adenocarcinoma. Nat Med (2026).
